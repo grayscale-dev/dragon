@@ -1,0 +1,15 @@
+<div class="app">
+  <dui-input
+    id="inp"
+    name="field"
+    placeholder="Email"
+    value={{this.value}}
+    {{on "input" this.handleInput}}
+    {{on "change" this.handleChange}}
+  ></dui-input>
+  <div id="out">{{this.value}}</div>
+  <div id="changed">{{this.changed}}</div>
+  <button id="set-value" type="button" {{on "click" this.setProgrammatic}}>
+    Set Value
+  </button>
+</div>

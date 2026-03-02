@@ -1,0 +1,30 @@
+{
+  "name": "dragon-ui-monorepo",
+  "private": true,
+  "type": "module",
+  "packageManager": "npm@10.9.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=9.0.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "tests/*"
+  ],
+  "scripts": {
+    "build": "npm --prefix packages/ui run build",
+    "test:ui": "npm --prefix packages/ui run test",
+    "test:react": "npm --prefix tests/playwright run test:react",
+    "test:vue": "npm --prefix tests/playwright run test:vue",
+    "test:angular": "npm --prefix tests/playwright run test:angular",
+    "test:ember": "npm --prefix tests/playwright run test:ember",
+    "test:svelte": "npm --prefix tests/playwright run test:svelte",
+    "test": "npm run test:ui && npm run test:react && npm run test:vue && npm run test:angular && npm run test:svelte && npm run test:ember"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1"
+  },
+  "overrides": {
+    "svelte": "4.2.18"
+  }
+}

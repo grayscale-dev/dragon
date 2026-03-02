@@ -1,0 +1,17 @@
+{
+  "name": "@acme/playwright-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test --config playwright.config.ts",
+    "test:react": "PW_APP=react playwright test --config playwright.config.ts",
+    "test:vue": "PW_APP=vue playwright test --config playwright.config.ts",
+    "test:angular": "PW_APP=angular playwright test --config playwright.config.ts",
+    "test:ember": "PW_APP=ember playwright test --config playwright.config.ts",
+    "test:svelte": "PW_APP=svelte playwright test --config playwright.config.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.1",
+    "typescript": "^5.5.4"
+  }
+}

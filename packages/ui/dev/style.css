@@ -1,0 +1,68 @@
+:root {
+  color-scheme: light;
+  font-family: "Space Grotesk", "Avenir Next", sans-serif;
+  background: radial-gradient(circle at top, #f6f7fb 0%, #eef1f7 45%, #e6ebf4 100%);
+  color: #1f2a3d;
+  --ui-input-padding: 0.65rem 0.85rem;
+  --ui-input-font-size: 1rem;
+  --ui-input-border: 1px solid #b7c2d6;
+  --ui-input-radius: 0.6rem;
+  --ui-input-bg: #ffffff;
+  --ui-input-color: #1f2a3d;
+  --ui-input-placeholder-color: #7f8aa3;
+  --ui-input-focus-ring: 0 0 0 3px rgba(25, 110, 255, 0.25);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+  display: grid;
+  gap: 24px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  display: grid;
+  gap: 16px;
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+dui-input::part(input) {
+  letter-spacing: 0.01em;
+}
+
+button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.6rem 1.2rem;
+  background: #1a2950;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 16px;
+  border-radius: 12px;
+  min-height: 64px;
+  margin: 0;
+}

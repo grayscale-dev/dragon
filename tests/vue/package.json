@@ -1,0 +1,19 @@
+{
+  "name": "@acme/vue-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4174"
+  },
+  "dependencies": {
+    "@grayscale-dev/dragon": "file:../../packages/ui",
+    "vue": "^3.5.8"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.3",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.8"
+  }
+}

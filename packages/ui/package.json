@@ -1,0 +1,38 @@
+{
+  "name": "@grayscale-dev/dragon",
+  "version": "0.1.1",
+  "description": "Framework-agnostic Web Components built with Lit.",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "preview": "vite preview",
+    "test": "web-test-runner --config web-test-runner.config.mjs"
+  },
+  "devDependencies": {
+    "@open-wc/testing": "^4.0.0",
+    "@types/node": "^22.10.0",
+    "@web/dev-server-esbuild": "^1.0.2",
+    "@web/test-runner": "^0.20.0",
+    "@web/test-runner-playwright": "^0.11.0",
+    "lit": "^3.2.1",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.8"
+  },
+  "peerDependencies": {
+    "lit": "^3.0.0"
+  }
+}

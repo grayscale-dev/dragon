@@ -1,0 +1,10 @@
+body {
+  font-family: system-ui, sans-serif;
+  padding: 24px;
+}
+
+.app {
+  display: grid;
+  gap: 12px;
+  max-width: 420px;
+}

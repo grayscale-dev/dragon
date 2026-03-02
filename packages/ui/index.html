@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dragon UI Input Demo</title>
+    <link rel="stylesheet" href="/dev/style.css" />
+  </head>
+  <body>
+    <main>
+      <section class="card">
+        <h1>&lt;dui-input&gt; playground</h1>
+        <dui-input
+          id="live-input"
+          label="Floating label"
+          label-position="floating"
+          placeholder="Type here"
+          name="example"
+          autocomplete="off"
+        ></dui-input>
+        <p>Value: <span id="live-value"></span></p>
+      </section>
+
+      <section class="card">
+        <h2>Form submit</h2>
+        <form id="demo-form">
+          <dui-input label="Username" name="username" required></dui-input>
+          <dui-input
+            label="Favorite color"
+            label-position="floating"
+            name="favorite"
+          ></dui-input>
+          <button type="submit">Submit</button>
+        </form>
+        <pre id="form-output">(submit the form)</pre>
+      </section>
+    </main>
+
+    <script type="module" src="/dev/main.ts"></script>
+  </body>
+</html>
