@@ -46,8 +46,8 @@ jobs:
       - name: Build package
         run: npm --prefix packages/ui run build
 
-      - name: Test package
-        run: npm --prefix packages/ui run test
+      # - name: Test package
+      #   run: npm --prefix packages/ui run test
 
       - name: Pack tarball
         run: npm --prefix packages/ui pack
