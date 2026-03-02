@@ -41,16 +41,20 @@ jobs:
           fi
 
       - name: Bump package version
-        run: npm --prefix packages/ui version "${{ github.event.inputs.version }}" --no-git-tag-version
+        working-directory: packages/ui
+        run: npm version "${{ github.event.inputs.version }}" --no-git-tag-version
 
       - name: Build package
-        run: npm --prefix packages/ui run build
+        working-directory: packages/ui
+        run: npm run build
 
-      # - name: Test package
-      #   run: npm --prefix packages/ui run test
+      - name: Test package
+        working-directory: packages/ui
+        run: npm run test
 
       - name: Pack tarball
-        run: npm --prefix packages/ui pack
+        working-directory: packages/ui
+        run: npm pack
 
       - name: Upload tarball artifact
         uses: actions/upload-artifact@v4
@@ -59,6 +63,7 @@ jobs:
           path: packages/ui/*.tgz
 
       - name: Publish to npm
-        run: npm --prefix packages/ui publish --access public --provenance
+        working-directory: packages/ui
+        run: npm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
