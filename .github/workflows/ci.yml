@@ -18,10 +18,13 @@ jobs:
           cache: npm
 
       - name: Install
-        run: npm ci
+        run: npm ci --include=optional
 
       - name: Workaround npm optional dependency bug (Rollup native binary)
-        run: npm install --no-save @rollup/rollup-linux-x64-gnu
+        run: |
+          ROLLUP_VERSION=$(node -p "require('./node_modules/rollup/package.json').version")
+          npm install --no-save @rollup/rollup-linux-x64-gnu@"$ROLLUP_VERSION"
+          node -e "require('@rollup/rollup-linux-x64-gnu')"
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
