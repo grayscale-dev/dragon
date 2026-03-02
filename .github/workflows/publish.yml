@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Workaround npm optional dependency bug (Rollup native binary)
+        run: npm install --no-save @rollup/rollup-linux-x64-gnu
+
       - name: Validate version input
         run: |
           VERSION="${{ github.event.inputs.version }}"
