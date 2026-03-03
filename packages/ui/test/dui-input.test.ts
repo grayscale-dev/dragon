@@ -112,6 +112,52 @@ describe('<dui-input>', () => {
     expect(input.placeholder).to.equal('');
   });
 
+  it('applies regex masking while typing', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input></dui-input>`);
+    el.regex = '^\\(\\d{3}\\)\\s\\d{3}-\\d{4}$';
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    input.value = '12a34x5678z90';
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await elementUpdated(el);
+
+    expect(el.value).to.equal('(123) 456-7890');
+    expect(input.value).to.equal('(123) 456-7890');
+  });
+
+  it('shows regex placeholder for non-floating input when enabled', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input></dui-input>`);
+    el.regex = '^\\(\\d{3}\\)\\s\\d{3}-\\d{4}$';
+    el.showRegexPlaceholder = true;
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    expect(input.placeholder).to.equal('(xxx) xxx-xxxx');
+  });
+
+  it('shows regex placeholder only while focused for floating labels', async () => {
+    const el = await fixture<DuiInput>(html`
+      <dui-input label="Phone" label-position="floating"></dui-input>
+    `);
+    el.regex = '^\\(\\d{3}\\)\\s\\d{3}-\\d{4}$';
+    el.showRegexPlaceholder = true;
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    expect(input.placeholder).to.equal('');
+
+    input.focus();
+    await nextFrame();
+    await elementUpdated(el);
+    expect(input.placeholder).to.equal('(xxx) xxx-xxxx');
+
+    input.blur();
+    await nextFrame();
+    await elementUpdated(el);
+    expect(input.placeholder).to.equal('');
+  });
+
   it('forwards focus and blur to the internal input', async () => {
     const el = await fixture<DuiInput>(html`<dui-input></dui-input>`);
     const input = getInput(el);
@@ -148,7 +194,6 @@ describe('<dui-input>', () => {
       if (supportsFA) {
         expect(data.get('field')).to.equal('seed');
       } else {
-        // TODO: enable full FA coverage when ElementInternals is supported.
         expect(data.get('field')).to.equal(null);
       }
     });
@@ -168,7 +213,6 @@ describe('<dui-input>', () => {
       if (supportsFA) {
         expect(el.value).to.equal('seed');
       } else {
-        // TODO: enable full FA coverage when ElementInternals is supported.
         expect(el.value).to.equal('changed');
       }
     });

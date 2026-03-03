@@ -15,10 +15,24 @@ export const duiInputManifest: ComponentManifest = {
     },
     {
       name: 'placeholder',
-      description: 'Placeholder text shown when value is empty. Hidden in floating label mode.',
+      description: 'Placeholder text shown when value is empty. Hidden in floating label mode unless regex placeholder is enabled while focused.',
       type: 'string',
       default: '',
       control: 'text'
+    },
+    {
+      name: 'regex',
+      description: 'Regex-like mask definition. Supported patterns include escaped literals and quantified slots such as ^\\(\\d{3}\\)\\s\\d{3}-\\d{4}$.',
+      type: 'string',
+      default: '',
+      control: 'text'
+    },
+    {
+      name: 'show-regex-placeholder',
+      description: 'If true and regex is valid, placeholder is generated from the regex mask (for floating labels, shown only while focused).',
+      type: 'boolean',
+      default: false,
+      control: 'boolean'
     },
     {
       name: 'name',
@@ -87,6 +101,18 @@ export const duiInputManifest: ComponentManifest = {
       description: 'Live value property kept in sync with the internal input.',
       type: 'string',
       default: ''
+    },
+    {
+      name: 'regex',
+      description: 'Mask source pattern used to constrain input formatting.',
+      type: 'string',
+      default: ''
+    },
+    {
+      name: 'showRegexPlaceholder',
+      description: 'Enables regex-derived placeholder text.',
+      type: 'boolean',
+      default: false
     },
     {
       name: 'labelPosition',
@@ -240,34 +266,40 @@ export const duiInputManifest: ComponentManifest = {
         order: 2
       },
       {
+        id: 'mask',
+        label: 'Mask',
+        description: 'Regex masking controls.',
+        order: 3
+      },
+      {
         id: 'typography',
         label: 'Typography',
-        order: 3
+        order: 4
       },
       {
         id: 'spacing',
         label: 'Spacing',
-        order: 4
+        order: 5
       },
       {
         id: 'floating',
         label: 'Floating Label',
-        order: 5
+        order: 6
       },
       {
         id: 'shape',
         label: 'Shape',
-        order: 6
+        order: 7
       },
       {
         id: 'color',
         label: 'Color',
-        order: 7
+        order: 8
       },
       {
         id: 'state',
         label: 'States',
-        order: 8
+        order: 9
       }
     ],
     controls: [
@@ -326,6 +358,22 @@ export const duiInputManifest: ComponentManifest = {
         group: 'behavior',
         label: 'Required',
         order: 4
+      },
+      {
+        id: 'regex',
+        kind: 'attribute',
+        ref: 'regex',
+        group: 'mask',
+        label: 'Regex Mask',
+        order: 1
+      },
+      {
+        id: 'show-regex-placeholder',
+        kind: 'attribute',
+        ref: 'show-regex-placeholder',
+        group: 'mask',
+        label: 'Show Regex Placeholder',
+        order: 2
       },
       {
         id: 'token-font-size',

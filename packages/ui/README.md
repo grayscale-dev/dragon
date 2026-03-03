@@ -23,7 +23,7 @@ npm --workspace packages/ui run build:manifest
 npm --workspace packages/ui run test
 ```
 
-Covers value/property sync, native `input`/`change` events, form association, focus forwarding, styling hooks, and manifest integrity.
+Covers value/property sync, native `input`/`change` events, form association, focus forwarding, styling hooks, masking behavior, and manifest integrity.
 
 **Usage (Vanilla)**
 
@@ -142,7 +142,27 @@ dui-input::part(input) {
 
 - `label-position="above"` (default): label sits above the field.
 - `label-position="floating"`: label sits like a placeholder and floats to the top-left on focus or when the input has a value.
-- Floating mode hides placeholder text to avoid overlap with the label.
+- Floating mode hides placeholder text to avoid overlap with the label, unless regex placeholder mode is enabled while focused.
+
+**Masking**
+
+`regex` enables mask formatting using a supported regex-like pattern.
+
+- Example phone pattern: `^\(\d{3}\)\s\d{3}-\d{4}$`
+- As the user types, input is normalized to the mask shape.
+- `show-regex-placeholder` shows a generated placeholder such as `(xxx) xxx-xxxx`.
+- With `label-position="floating"`, the regex placeholder appears only while focused.
+
+Example:
+
+```html
+<dui-input
+  label="Phone"
+  label-position="floating"
+  regex="^\(\d{3}\)\s\d{3}-\d{4}$"
+  show-regex-placeholder
+></dui-input>
+```
 
 **Form Behavior**
 
