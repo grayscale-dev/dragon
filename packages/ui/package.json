@@ -1,6 +1,6 @@
 {
   "name": "@grayscale-dev/dragon",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Framework-agnostic Web Components built with Lit.",
   "type": "module",
   "files": [
@@ -25,6 +25,9 @@
     "build:manifest": "tsx src/manifest/build-manifest.ts",
     "preview": "vite preview",
     "test": "npm run build:manifest && web-test-runner --config web-test-runner.config.mjs"
+  },
+  "dependencies": {
+    "imask": "^7.6.1"
   },
   "devDependencies": {
     "@open-wc/testing": "^4.0.0",

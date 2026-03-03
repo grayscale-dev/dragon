@@ -15,14 +15,14 @@ export const duiInputManifest: ComponentManifest = {
     },
     {
       name: 'placeholder',
-      description: 'Placeholder text shown when value is empty. Hidden in floating label mode unless explicit regex placeholder mode is enabled while focused.',
+      description: 'Placeholder text shown when value is empty. Hidden in floating label mode unless regex-placeholder is provided while focused.',
       type: 'string',
       default: '',
       control: 'text'
     },
     {
       name: 'regex',
-      description: 'Regex-like mask definition. Supported patterns include escaped literals and quantified slots such as ^\\(\\d{3}\\)\\s\\d{3}-\\d{4}$.',
+      description: 'JavaScript regular expression used by the IMask regex engine.',
       type: 'string',
       default: '',
       control: 'text'
@@ -104,7 +104,7 @@ export const duiInputManifest: ComponentManifest = {
     },
     {
       name: 'regex',
-      description: 'Mask source pattern used to constrain input formatting.',
+      description: 'Regex source pattern used for masking.',
       type: 'string',
       default: ''
     },
@@ -374,7 +374,8 @@ export const duiInputManifest: ComponentManifest = {
         group: 'mask',
         label: 'Regex Placeholder',
         order: 2
-      },      {
+      },
+      {
         id: 'token-font-size',
         kind: 'cssToken',
         ref: '--ui-input-font-size',

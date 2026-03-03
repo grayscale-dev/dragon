@@ -112,18 +112,18 @@ describe('<dui-input>', () => {
     expect(input.placeholder).to.equal('');
   });
 
-  it('applies regex masking while typing', async () => {
+  it('supports full regex operators like * for digit-only input', async () => {
     const el = await fixture<DuiInput>(html`<dui-input></dui-input>`);
-    el.regex = '^\\(\\d{3}\\)\\s\\d{3}-\\d{4}$';
+    el.regex = '^\\d*$';
     await elementUpdated(el);
 
     const input = getInput(el);
-    input.value = '12a34x5678z90';
+    input.value = '12a34';
     input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
     await elementUpdated(el);
 
-    expect(el.value).to.equal('(123) 456-7890');
-    expect(input.value).to.equal('(123) 456-7890');
+    expect(el.value).to.equal('1234');
+    expect(input.value).to.equal('1234');
   });
 
   it('shows explicit regex-placeholder for non-floating input when it exists', async () => {

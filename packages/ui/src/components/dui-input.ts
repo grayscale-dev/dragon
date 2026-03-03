@@ -1,143 +1,26 @@
+import IMask from 'imask';
 import { css, html, LitElement } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 
-type MaskToken =
-  | { kind: 'literal'; value: string }
-  | { kind: 'slot'; test: (char: string) => boolean; placeholder: string };
-
-interface ParsedMask {
-  source: string;
-  tokens: MaskToken[];
-  placeholder: string;
-}
-
-function normalizeRegexSource(pattern: string): string {
+function parseRegex(pattern: string): RegExp | null {
   const trimmed = pattern.trim();
-  if (trimmed.startsWith('/') && trimmed.lastIndexOf('/') > 0) {
-    const finalSlash = trimmed.lastIndexOf('/');
-    return trimmed.slice(1, finalSlash);
-  }
-  return trimmed;
-}
+  if (!trimmed) return null;
 
-function readQuantifier(source: string, startIndex: number): { count: number; nextIndex: number } {
-  if (source[startIndex] !== '{') {
-    return { count: 1, nextIndex: startIndex };
-  }
-
-  let index = startIndex + 1;
-  let digits = '';
-  while (index < source.length && /\d/.test(source[index])) {
-    digits += source[index];
-    index += 1;
-  }
-
-  if (!digits || source[index] !== '}') {
-    return { count: 1, nextIndex: startIndex };
-  }
-
-  return {
-    count: Number(digits),
-    nextIndex: index + 1
-  };
-}
-
-function repeatToken(tokens: MaskToken[], token: MaskToken, count: number): void {
-  const safeCount = Number.isFinite(count) && count > 0 ? Math.floor(count) : 1;
-  for (let i = 0; i < safeCount; i += 1) {
-    if (token.kind === 'slot') {
-      tokens.push({ kind: 'slot', test: token.test, placeholder: token.placeholder });
-    } else {
-      tokens.push({ kind: 'literal', value: token.value });
-    }
-  }
-}
-
-function parseRegexMask(pattern: string): ParsedMask | null {
-  if (!pattern.trim()) return null;
-
-  let source = normalizeRegexSource(pattern);
-  if (source.startsWith('^')) source = source.slice(1);
-  if (source.endsWith('$')) source = source.slice(0, -1);
-  if (!source) return null;
-
-  const tokens: MaskToken[] = [];
-
-  for (let index = 0; index < source.length; index += 1) {
-    const char = source[index];
-
-    if (char === '\\') {
-      const escaped = source[index + 1];
-      if (!escaped) return null;
-
-      let token: MaskToken;
-      if (escaped === 'd') {
-        token = { kind: 'slot', test: (value) => /^\d$/.test(value), placeholder: 'x' };
-      } else if (escaped === 'w') {
-        token = { kind: 'slot', test: (value) => /^\w$/.test(value), placeholder: 'x' };
-      } else if (escaped === 's') {
-        token = { kind: 'literal', value: ' ' };
-      } else {
-        token = { kind: 'literal', value: escaped };
+  try {
+    if (trimmed.startsWith('/')) {
+      const finalSlash = trimmed.lastIndexOf('/');
+      if (finalSlash > 0) {
+        const source = trimmed.slice(1, finalSlash);
+        const flags = trimmed.slice(finalSlash + 1);
+        return new RegExp(source, flags);
       }
-
-      const quantifier = readQuantifier(source, index + 2);
-      repeatToken(tokens, token, quantifier.count);
-      index = quantifier.nextIndex - 1;
-      continue;
     }
 
-    if (char === '[') {
-      const endIndex = source.indexOf(']', index + 1);
-      if (endIndex === -1) return null;
-      const classContent = source.slice(index + 1, endIndex);
-      if (!classContent) return null;
-
-      const classRegex = new RegExp(`^[${classContent}]$`);
-      const token: MaskToken = {
-        kind: 'slot',
-        test: (value) => classRegex.test(value),
-        placeholder: 'x'
-      };
-
-      const quantifier = readQuantifier(source, endIndex + 1);
-      repeatToken(tokens, token, quantifier.count);
-      index = quantifier.nextIndex - 1;
-      continue;
-    }
-
-    if (char === '.') {
-      const token: MaskToken = {
-        kind: 'slot',
-        test: (value) => /^[\s\S]$/.test(value),
-        placeholder: 'x'
-      };
-      const quantifier = readQuantifier(source, index + 1);
-      repeatToken(tokens, token, quantifier.count);
-      index = quantifier.nextIndex - 1;
-      continue;
-    }
-
-    if (char === '+' || char === '*' || char === '?' || char === '{' || char === '}') {
-      return null;
-    }
-
-    const token: MaskToken = { kind: 'literal', value: char };
-    const quantifier = readQuantifier(source, index + 1);
-    repeatToken(tokens, token, quantifier.count);
-    index = quantifier.nextIndex - 1;
+    return new RegExp(trimmed);
+  } catch {
+    return null;
   }
-
-  const placeholder = tokens
-    .map((token) => (token.kind === 'literal' ? token.value : token.placeholder))
-    .join('');
-
-  return {
-    source,
-    tokens,
-    placeholder
-  };
 }
 
 @customElement('dui-input')
@@ -236,7 +119,7 @@ export class DuiInput extends LitElement {
 
   private internals?: ElementInternals;
   private defaultValue?: string;
-  private mask: ParsedMask | null = null;
+  private compiledRegex: RegExp | null = null;
   private isFocused = false;
 
   constructor() {
@@ -248,31 +131,31 @@ export class DuiInput extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-
-    this.mask = parseRegexMask(this.regex);
+    this.compiledRegex = parseRegex(this.regex);
 
     if (this.defaultValue === undefined) {
-      const defaultAttrValue = this.getAttribute('value') ?? '';
-      this.defaultValue = this.normalizeMaskedValue(defaultAttrValue);
+      this.defaultValue = this.getAttribute('value') ?? '';
     }
 
-    this.value = this.normalizeMaskedValue(this.value);
     this.syncFormValue();
   }
 
   override willUpdate(changed: Map<string, unknown>): void {
     if (changed.has('regex')) {
-      this.mask = parseRegexMask(this.regex);
-      this.defaultValue = this.normalizeMaskedValue(this.getAttribute('value') ?? '');
+      this.compiledRegex = parseRegex(this.regex);
     }
   }
 
   override updated(changed: Map<string, unknown>): void {
     if (changed.has('value') || changed.has('regex')) {
-      const normalized = this.normalizeMaskedValue(this.value);
+      const normalized = this.normalizeWithRegex(this.value);
       if (normalized !== this.value) {
         this.value = normalized;
         return;
+      }
+
+      if (this.inputEl && this.inputEl.value !== normalized) {
+        this.inputEl.value = normalized;
       }
     }
 
@@ -295,7 +178,7 @@ export class DuiInput extends LitElement {
 
   formStateRestoreCallback(state: unknown): void {
     if (typeof state === 'string') {
-      this.value = this.normalizeMaskedValue(state);
+      this.value = this.normalizeWithRegex(state);
     }
   }
 
@@ -303,42 +186,16 @@ export class DuiInput extends LitElement {
     this.disabled = disabled;
   }
 
-  private normalizeMaskedValue(inputValue: string): string {
-    if (!this.mask) return inputValue;
+  private normalizeWithRegex(inputValue: string): string {
+    if (!this.compiledRegex) return inputValue;
 
-    const slotTokens = this.mask.tokens.filter(
-      (token): token is Extract<MaskToken, { kind: 'slot' }> => token.kind === 'slot'
-    );
+    const mask = IMask.createMask({ mask: this.compiledRegex }) as {
+      resolve: (value: string) => void;
+      value: string;
+    };
 
-    const collected: string[] = [];
-    let slotIndex = 0;
-
-    for (const char of inputValue) {
-      if (slotIndex >= slotTokens.length) break;
-      if (slotTokens[slotIndex].test(char)) {
-        collected.push(char);
-        slotIndex += 1;
-      }
-    }
-
-    let formatted = '';
-    let consumedSlots = 0;
-
-    for (const token of this.mask.tokens) {
-      if (token.kind === 'slot') {
-        if (consumedSlots >= collected.length) {
-          break;
-        }
-        formatted += collected[consumedSlots];
-        consumedSlots += 1;
-      } else {
-        if (collected.length > 0 && consumedSlots <= collected.length) {
-          formatted += token.value;
-        }
-      }
-    }
-
-    return formatted;
+    mask.resolve(inputValue);
+    return mask.value;
   }
 
   private syncFormValue(): void {
@@ -353,7 +210,7 @@ export class DuiInput extends LitElement {
   private handleInput(event: Event): void {
     event.stopPropagation();
     const target = event.target as HTMLInputElement;
-    const nextValue = this.normalizeMaskedValue(target.value);
+    const nextValue = this.normalizeWithRegex(target.value);
 
     if (target.value !== nextValue) {
       target.value = nextValue;
@@ -366,7 +223,7 @@ export class DuiInput extends LitElement {
   private handleChange(event: Event): void {
     event.stopPropagation();
     const target = event.target as HTMLInputElement;
-    const nextValue = this.normalizeMaskedValue(target.value);
+    const nextValue = this.normalizeWithRegex(target.value);
 
     if (target.value !== nextValue) {
       target.value = nextValue;
@@ -379,7 +236,7 @@ export class DuiInput extends LitElement {
   private handleKeydown(event: KeyboardEvent): void {
     if (event.key !== 'Enter') return;
     const target = event.target as HTMLInputElement;
-    const nextValue = this.normalizeMaskedValue(target.value);
+    const nextValue = this.normalizeWithRegex(target.value);
 
     if (target.value !== nextValue) {
       target.value = nextValue;

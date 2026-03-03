@@ -146,10 +146,12 @@ dui-input::part(input) {
 
 **Masking**
 
-`regex` enables mask formatting using a supported regex-like pattern.
+`regex` uses the IMask regex engine with full JavaScript `RegExp` syntax.
 
-- Example phone pattern: `^\(\d{3}\)\s\d{3}-\d{4}$`
-- As the user types, input is normalized to the mask shape.
+- Example single digit: `\d`
+- Example unlimited digits: `\d*`
+- Example phone validation shape: `^\(\d{3}\)\s\d{3}-\d{4}$`
+- As the user types, input is constrained by the regex.
 - `regex-placeholder` provides explicit placeholder text for regex mode.
 - If `regex-placeholder` is empty, no regex placeholder is shown.
 - With `label-position="floating"`, regex placeholder appears only while focused.
