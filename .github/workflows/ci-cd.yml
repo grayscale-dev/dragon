@@ -1,0 +1,43 @@
+name: CI/CD
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+
+      - run: npm ci --include=optional
+
+      - name: Workaround npm optional dependency bug (Rollup native binary)
+        run: |
+          ROLLUP_VERSION=$(node -p "require('./node_modules/rollup/package.json').version")
+          npm install --no-save @rollup/rollup-linux-x64-gnu@"$ROLLUP_VERSION"
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run UI unit tests
+        run: npm --prefix packages/ui run test
+
+      - name: Build UI package
+        run: npm --prefix packages/ui run build
+
+      - name: Publish UI package
+        run: npm publish --access public --workspaces=false
+        working-directory: packages/ui
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
