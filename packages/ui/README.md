@@ -9,13 +9,21 @@ npm install
 npm --workspace packages/ui run build
 ```
 
+**Manifest Build**
+
+```bash
+npm --workspace packages/ui run build:manifest
+```
+
+`build` always generates `dist/manifest.json` and validates it with zod.
+
 **Unit Tests**
 
 ```bash
 npm --workspace packages/ui run test
 ```
 
-Covers value/property sync, native `input`/`change` events, form association, focus forwarding, and styling hooks.
+Covers value/property sync, native `input`/`change` events, form association, focus forwarding, styling hooks, and manifest integrity.
 
 **Usage (Vanilla)**
 
@@ -71,6 +79,25 @@ function handleInput(e: Event) {
 </template>
 ```
 
+**Manifest Consumption**
+
+Machine-readable docs/theme-builder metadata is exported at `@grayscale-dev/dragon/manifest`.
+
+```ts
+import manifest from '@grayscale-dev/dragon/manifest';
+
+for (const component of manifest.components) {
+  console.log(component.tag, component.cssTokens.length);
+}
+```
+
+Generate docs/theme controls from this manifest only, so package metadata remains your single source of truth.
+
+**Metadata Files**
+
+- `dist/manifest.json`: Dragon UI docs/theme-builder metadata (tokens, controls, builder groups, option enums).
+- `custom-elements.json`: optional Web Components API standard file (not currently generated in this package).
+
 **Styling**
 
 CSS custom properties:
@@ -84,6 +111,12 @@ CSS custom properties:
 - `--ui-input-placeholder-color`
 - `--ui-input-focus-ring`
 - `--ui-input-label-font-size`
+- `--ui-input-label-color`
+- `--ui-input-floating-label-left`
+- `--ui-input-floating-padding-top`
+- `--ui-input-floating-padding-right`
+- `--ui-input-floating-padding-bottom`
+- `--ui-input-floating-padding-left`
 
 Default size values in `<dui-input>` are pixel-based.
 

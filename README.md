@@ -14,6 +14,10 @@ npm install
 npm run build
 ```
 
+**Manifest**
+
+`packages/ui` emits `dist/manifest.json` (exported as `@grayscale-dev/dragon/manifest`) for docs/theme-builder generation.
+
 **Tests**
 
 ```bash
