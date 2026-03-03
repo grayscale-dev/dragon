@@ -1,10 +1,20 @@
+import { duiCurrencyInputManifest } from './components/dui-currency-input.js';
+import { duiDateInputManifest } from './components/dui-date-input.js';
 import { duiInputManifest } from './components/dui-input.js';
+import { duiMaskInputManifest } from './components/dui-mask-input.js';
+import { duiNumberInputManifest } from './components/dui-number-input.js';
 import { ManifestSchema, type DragonManifest } from './schema.js';
 
 export const manifest: DragonManifest = {
   version: 1,
   package: '@grayscale-dev/dragon',
-  components: [duiInputManifest]
+  components: [
+    duiInputManifest,
+    duiMaskInputManifest,
+    duiNumberInputManifest,
+    duiCurrencyInputManifest,
+    duiDateInputManifest
+  ]
 };
 
 export function getManifest(): DragonManifest {
@@ -19,7 +29,12 @@ export {
   PartMetaSchema,
   CssTokenMetaSchema,
   BuilderMetaSchema,
-  ComponentManifestSchema
+  ComponentManifestSchema,
+  ExampleGroupSchema,
+  ExampleSnippetSchema,
+  ExamplePreviewSchema,
+  ExampleItemSchema,
+  ComponentExamplesSchema
 } from './schema.js';
 
 export type {
@@ -31,5 +46,10 @@ export type {
   PartMeta,
   CssTokenMeta,
   BuilderMeta,
-  BuilderControl
+  BuilderControl,
+  ExampleGroup,
+  ExampleSnippet,
+  ExamplePreview,
+  ExampleItem,
+  ComponentExamples
 } from './schema.js';

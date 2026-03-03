@@ -56,6 +56,72 @@ describe('component manifest', () => {
     expect(labelPosition?.options?.map((option) => option.value)).to.deep.equal(['above', 'floating']);
   });
 
+  it('has valid examples for dui-input', () => {
+    const manifest = getManifest();
+    const input = manifest.components.find((component) => component.tag === 'dui-input');
+    expect(input?.examples).to.exist;
+    expect(input?.examples?.groups.length).to.be.greaterThan(0);
+    expect(input?.examples?.items.length).to.be.greaterThan(0);
+  });
+
+  it('fails when duplicate example group ids exist', () => {
+    const manifest = structuredClone(getManifest());
+    const input = manifest.components.find((component) => component.tag === 'dui-input');
+    expect(input?.examples).to.exist;
+
+    input!.examples!.groups.push({
+      id: input!.examples!.groups[0].id,
+      label: 'Duplicate Group',
+      order: 999
+    });
+
+    const result = ManifestSchema.safeParse(manifest);
+    expect(result.success).to.equal(false);
+    expect(result.error?.issues.some((issue) => issue.message.includes('Duplicate example group id'))).to.equal(true);
+  });
+
+  it('fails when duplicate example item ids exist', () => {
+    const manifest = structuredClone(getManifest());
+    const input = manifest.components.find((component) => component.tag === 'dui-input');
+    expect(input?.examples).to.exist;
+
+    const source = input!.examples!.items[0];
+    input!.examples!.items.push({
+      ...source,
+      group: source.group,
+      title: 'Duplicate Item',
+      order: 999
+    });
+
+    const result = ManifestSchema.safeParse(manifest);
+    expect(result.success).to.equal(false);
+    expect(result.error?.issues.some((issue) => issue.message.includes('Duplicate example item id'))).to.equal(true);
+  });
+
+  it('fails when example item references unknown group', () => {
+    const manifest = structuredClone(getManifest());
+    const input = manifest.components.find((component) => component.tag === 'dui-input');
+    expect(input?.examples).to.exist;
+
+    input!.examples!.items[0].group = 'missing-group';
+
+    const result = ManifestSchema.safeParse(manifest);
+    expect(result.success).to.equal(false);
+    expect(result.error?.issues.some((issue) => issue.message.includes('references unknown group'))).to.equal(true);
+  });
+
+  it('fails when related example reference is unknown', () => {
+    const manifest = structuredClone(getManifest());
+    const input = manifest.components.find((component) => component.tag === 'dui-input');
+    expect(input?.examples).to.exist;
+
+    input!.examples!.items[0].related = ['missing-example'];
+
+    const result = ManifestSchema.safeParse(manifest);
+    expect(result.success).to.equal(false);
+    expect(result.error?.issues.some((issue) => issue.message.includes('unknown related example'))).to.equal(true);
+  });
+
   it('matches the generated dist/manifest.json snapshot', async () => {
     const manifest = getManifest();
     const response = await fetch('/dist/manifest.json');
