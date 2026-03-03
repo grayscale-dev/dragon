@@ -1,27 +1,8 @@
-import IMask from 'imask';
+import Inputmask from 'inputmask/dist/inputmask.es6.js';
 import { css, html, LitElement } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { ifDefined } from 'lit/directives/if-defined.js';
 
-function parseRegex(pattern: string): RegExp | null {
-  const trimmed = pattern.trim();
-  if (!trimmed) return null;
-
-  try {
-    if (trimmed.startsWith('/')) {
-      const finalSlash = trimmed.lastIndexOf('/');
-      if (finalSlash > 0) {
-        const source = trimmed.slice(1, finalSlash);
-        const flags = trimmed.slice(finalSlash + 1);
-        return new RegExp(source, flags);
-      }
-    }
-
-    return new RegExp(trimmed);
-  } catch {
-    return null;
-  }
-}
 
 @customElement('dui-input')
 export class DuiInput extends LitElement {
@@ -114,14 +95,13 @@ export class DuiInput extends LitElement {
   @property({ type: String, reflect: true }) autocomplete?: string;
   @property({ type: String }) label = '';
   @property({ type: String, attribute: 'label-position' }) labelPosition: 'floating' | 'above' = 'above';
-  @property({ type: String, reflect: true }) regex = '';
+  @property({ type: String, attribute: 'input-mask' }) inputMask = '';
 
   @query('input')
   private inputEl?: HTMLInputElement;
 
   private internals?: ElementInternals;
   private defaultValue?: string;
-  private compiledRegex: RegExp | null = null;
 
   constructor() {
     super();
@@ -132,8 +112,6 @@ export class DuiInput extends LitElement {
 
   override connectedCallback(): void {
     super.connectedCallback();
-    this.compiledRegex = parseRegex(this.regex);
-
     if (this.defaultValue === undefined) {
       this.defaultValue = this.getAttribute('value') ?? '';
     }
@@ -141,14 +119,8 @@ export class DuiInput extends LitElement {
     this.syncFormValue();
   }
 
-  override willUpdate(changed: Map<string, unknown>): void {
-    if (changed.has('regex')) {
-      this.compiledRegex = parseRegex(this.regex);
-    }
-  }
-
   override updated(changed: Map<string, unknown>): void {
-    if (changed.has('value') || changed.has('regex') || changed.has('prefix') || changed.has('suffix') || changed.has('template')) {
+    if (changed.has('value') || changed.has('inputMask') || changed.has('prefix') || changed.has('suffix') || changed.has('template')) {
       const normalized = this.normalizeFromValue(this.value);
       if (normalized !== this.value) {
         this.value = normalized;
@@ -188,16 +160,16 @@ export class DuiInput extends LitElement {
     this.disabled = disabled;
   }
 
-  private normalizeWithRegex(inputValue: string): string {
-    if (!this.compiledRegex) return inputValue;
+  private normalizeWithInputMask(inputValue: string): string {
+    if (!this.inputMask.trim()) return inputValue;
 
-    const mask = IMask.createMask({ mask: this.compiledRegex }) as {
-      resolve: (value: string) => void;
-      value: string;
-    };
-
-    mask.resolve(inputValue);
-    return mask.value;
+    try {
+      const options = { mask: this.inputMask, jitMasking: false };
+      const formatted = Inputmask.format(inputValue, options);
+      return Inputmask.unmask(formatted, options);
+    } catch {
+      return inputValue;
+    }
   }
 
   private stripAffixes(inputValue: string): string {
@@ -247,14 +219,14 @@ export class DuiInput extends LitElement {
   }
 
   private normalizeFromValue(inputValue: string): string {
-    const normalized = this.normalizeWithRegex(this.stripAffixes(inputValue));
+    const normalized = this.normalizeWithInputMask(this.stripAffixes(inputValue));
     return this.capToTemplate(normalized);
   }
 
   private normalizeFromUserInput(inputValue: string): string {
     const withoutAffixes = this.stripAffixes(inputValue);
     const templateValue = this.extractTemplateValue(withoutAffixes);
-    const normalized = this.normalizeWithRegex(templateValue);
+    const normalized = this.normalizeWithInputMask(templateValue);
     return this.capToTemplate(normalized);
   }
 

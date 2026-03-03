@@ -112,9 +112,9 @@ describe('<dui-input>', () => {
     expect(input.placeholder).to.equal('');
   });
 
-  it('supports full regex operators like * for digit-only input', async () => {
+  it('applies input-mask filtering for digit-only input', async () => {
     const el = await fixture<DuiInput>(html`<dui-input></dui-input>`);
-    el.regex = '^\\d*$';
+    el.inputMask = '9{1,10}';
     await elementUpdated(el);
 
     const input = getInput(el);
@@ -128,7 +128,7 @@ describe('<dui-input>', () => {
 
   it('applies template literals and fills x slots with typed values', async () => {
     const el = await fixture<DuiInput>(html`<dui-input template="(xxx) xxx-xxxx"></dui-input>`);
-    el.regex = '^\\d*$';
+    el.inputMask = '9{1,10}';
     await elementUpdated(el);
 
     const input = getInput(el);
@@ -142,9 +142,9 @@ describe('<dui-input>', () => {
     expect(input.value).to.equal('(8xx) xxx-xxxx');
   });
 
-  it('keeps regex enforcement with template plus prefix/suffix', async () => {
+  it('keeps input-mask enforcement with template plus prefix/suffix', async () => {
     const el = await fixture<DuiInput>(html`<dui-input template="(xxx) xxx-xxxx" prefix="$" suffix="px"></dui-input>`);
-    el.regex = '^\\d*$';
+    el.inputMask = '9{1,10}';
     await elementUpdated(el);
 
     const input = getInput(el);
@@ -183,9 +183,9 @@ describe('<dui-input>', () => {
     expect(input.value).to.equal('$px');
   });
 
-  it('applies regex masking to user input even with prefix/suffix', async () => {
+  it('applies input-mask filtering to user input even with prefix/suffix', async () => {
     const el = await fixture<DuiInput>(html`<dui-input prefix="$" suffix="px"></dui-input>`);
-    el.regex = '^\\d*$';
+    el.inputMask = '9{1,10}';
     await elementUpdated(el);
 
     const input = getInput(el);

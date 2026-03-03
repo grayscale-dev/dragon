@@ -42,8 +42,8 @@ export const duiInputManifest: ComponentManifest = {
       control: 'text'
     },
     {
-      name: 'regex',
-      description: 'JavaScript regular expression used by the IMask regex engine.',
+      name: 'input-mask',
+      description: 'Inputmask mask expression used to constrain user input.',
       type: 'string',
       default: '',
       control: 'text'
@@ -135,8 +135,8 @@ export const duiInputManifest: ComponentManifest = {
       default: ''
     },
     {
-      name: 'regex',
-      description: 'Regex source pattern used for masking.',
+      name: 'inputMask',
+      description: 'Inputmask mask expression used for masking.',
       type: 'string',
       default: ''
     },
@@ -294,7 +294,7 @@ export const duiInputManifest: ComponentManifest = {
       {
         id: 'mask',
         label: 'Mask',
-        description: 'Regex masking controls.',
+        description: 'Input mask controls.',
         order: 3
       },
       {
@@ -410,11 +410,11 @@ export const duiInputManifest: ComponentManifest = {
         order: 4
       },
       {
-        id: 'regex',
+        id: 'input-mask',
         kind: 'attribute',
-        ref: 'regex',
+        ref: 'input-mask',
         group: 'mask',
-        label: 'Regex Mask',
+        label: 'Input Mask',
         order: 1
       },
       {

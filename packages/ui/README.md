@@ -149,13 +149,13 @@ dui-input::part(input) {
 Use `prefix` and `suffix` to show fixed text around the user value.
 
 - Affixes are always displayed in the input.
-- Regex masking still applies to what the user types (`value` stays unprefixed/unsuffixed).
+- Input masking still applies to what the user types (`value` stays unprefixed/unsuffixed).
 
 Example:
 
 ```html
-<dui-input label="Amount" prefix="$" regex="^\\d*$"></dui-input>
-<dui-input label="Width" suffix="px" regex="^\\d*$"></dui-input>
+<dui-input label="Amount" prefix="$" input-mask="9{1,10}"></dui-input>
+<dui-input label="Width" suffix="px" input-mask="9{1,10}"></dui-input>
 ```
 
 **Template Masks**
@@ -164,7 +164,7 @@ Use `template` to keep literal characters visible while `x` positions are filled
 
 - `x` = value slot
 - Non-`x` characters stay visible in the field
-- Works with `regex`, `prefix`, and `suffix`
+- Works with `input-mask`, `prefix`, and `suffix`
 
 Example:
 
@@ -172,7 +172,7 @@ Example:
 <dui-input
   label="Phone"
   template="(xxx) xxx-xxxx"
-  regex="^\\d*$"
+  input-mask="9{1,10}"
 ></dui-input>
 ```
 
@@ -180,12 +180,12 @@ Typing `8` shows `(8xx) xxx-xxxx`.
 
 **Masking**
 
-`regex` uses the IMask regex engine with full JavaScript `RegExp` syntax.
+`input-mask` uses the Inputmask pattern syntax.
 
-- Example single digit: `\d`
-- Example unlimited digits: `\d*`
-- Example phone validation shape: `^\(\d{3}\)\s\d{3}-\d{4}$`
-- As the user types, input is constrained by the regex.
+- Example 4 digits: `9999`
+- Example 1-10 digits: `9{1,10}`
+- Example phone shape: `(999) 999-9999`
+- As the user types, input is constrained by the mask.
 
 Example:
 
@@ -193,7 +193,7 @@ Example:
 <dui-input
   label="Phone"
   label-position="floating"
-  regex="^\(\d{3}\)\s\d{3}-\d{4}$"
+  input-mask="(999) 999-9999"
 ></dui-input>
 ```
 
