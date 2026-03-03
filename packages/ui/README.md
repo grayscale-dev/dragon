@@ -158,6 +158,32 @@ Example:
 <dui-input label="Width" suffix="px" input-mask="9{1,10}"></dui-input>
 ```
 
+**Preset Templates**
+
+Use `template-name` for built-in mask presets, then override with `input-mask`/`input-mask-config` for edge cases.
+
+Available presets:
+
+- `phone-us`
+- `phone-intl`
+- `ssn`
+- `ein`
+- `zip-us`
+- `zip-plus4-us`
+- `credit-card`
+- `cvv`
+- `expiry`
+- `date-iso`
+- `time-24h`
+- `currency-usd`
+
+Example:
+
+```html
+<dui-input template-name="phone-us"></dui-input>
+<dui-input template-name="currency-usd"></dui-input>
+```
+
 **Template Masks**
 
 Use `template` to keep literal characters visible while `x` positions are filled by the typed value.
@@ -196,6 +222,58 @@ Example:
   input-mask="(999) 999-9999"
 ></dui-input>
 ```
+
+`input-mask-config` passes Inputmask options. You can set it as JSON attribute or as a property object.
+
+```html
+<dui-input
+  input-mask="decimal"
+  input-mask-config='{"alias":"numeric","groupSeparator":",","autoGroup":true,"digits":2,"radixPoint":".","prefix":"$ ","removeMaskOnSubmit":true}'
+></dui-input>
+```
+
+```ts
+const el = document.querySelector('dui-input');
+el.inputMask = 'decimal';
+el.inputMaskConfig = {
+  alias: 'numeric',
+  groupSeparator: ',',
+  autoGroup: true,
+  digits: 2,
+  radixPoint: '.',
+  prefix: '$ ',
+  removeMaskOnSubmit: true
+};
+```
+
+**InputNumber-Like Options**
+
+`dui-input` supports most PrimeReact-style number props (without spinner buttons):
+
+- `mode="decimal|currency"`
+- `locale`, `locale-matcher`
+- `currency`, `currency-display`
+- `use-grouping`
+- `min-fraction-digits`, `max-fraction-digits`
+- `min`, `max`, `step`
+- `allow-empty`
+
+Example:
+
+```html
+<dui-input
+  mode="currency"
+  currency="USD"
+  locale="en-US"
+  use-grouping
+  min-fraction-digits="2"
+  max-fraction-digits="2"
+  min="0"
+  step="0.25"
+></dui-input>
+```
+
+Press `ArrowUp` / `ArrowDown` to increment/decrement by `step` in number mode.
 
 **Form Behavior**
 

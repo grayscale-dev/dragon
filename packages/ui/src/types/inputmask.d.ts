@@ -1,7 +1,9 @@
 declare module 'inputmask/dist/inputmask.es6.js' {
   interface InputmaskOptions {
-    mask: string;
+    mask?: string;
+    alias?: string;
     jitMasking?: boolean;
+    [key: string]: unknown;
   }
 
   interface InputmaskStatic {

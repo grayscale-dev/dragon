@@ -1,4 +1,13 @@
+import { DUI_INPUT_MASK_PRESETS } from '../../masks/presets.js';
 import type { ComponentManifest } from '../schema.js';
+
+const presetOptions = Object.keys(DUI_INPUT_MASK_PRESETS).map((value) => ({
+  value,
+  label: value
+    .split('-')
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join(' ')
+}));
 
 export const duiInputManifest: ComponentManifest = {
   tag: 'dui-input',
@@ -42,8 +51,184 @@ export const duiInputManifest: ComponentManifest = {
       control: 'text'
     },
     {
+      name: 'template-name',
+      description: 'Name of a built-in mask preset. Useful for quick setup before custom overrides.',
+      type: 'string',
+      default: '',
+      control: 'select',
+      options: presetOptions
+    },
+    {
+      name: 'mask',
+      description: 'InputMask-compatible alias for input-mask.',
+      type: 'string',
+      default: '',
+      control: 'text'
+    },
+    {
       name: 'input-mask',
-      description: 'Inputmask mask expression used to constrain user input.',
+      description: 'Inputmask expression. Pattern-like values are treated as mask, word-like values are treated as alias.',
+      type: 'string',
+      default: '',
+      control: 'text'
+    },
+    {
+      name: 'input-mask-config',
+      description: 'JSON options object passed to Inputmask (alias, separators, digits, prefix, etc.).',
+      type: 'string',
+      default: '{}',
+      control: 'text'
+    },
+    {
+      name: 'slot-char',
+      description: 'Mask placeholder character used for unfilled slots.',
+      type: 'string',
+      default: '_',
+      control: 'text'
+    },
+    {
+      name: 'auto-clear',
+      description: 'Clears incomplete input when mask is not fully satisfied.',
+      type: 'boolean',
+      default: true,
+      control: 'boolean'
+    },
+    {
+      name: 'unmask',
+      description: 'When true, value stores unmasked content. When false, stores masked text for mask mode.',
+      type: 'boolean',
+      default: true,
+      control: 'boolean'
+    },
+    {
+      name: 'mode',
+      description: 'InputNumber-style mode for numeric formatting.',
+      type: '"" | "decimal" | "currency"',
+      default: '',
+      control: 'select',
+      options: [
+        { value: 'decimal', label: 'Decimal' },
+        { value: 'currency', label: 'Currency' }
+      ]
+    },
+    {
+      name: 'locale',
+      description: 'Locale used for number and currency formatting.',
+      type: 'string',
+      default: '',
+      control: 'text'
+    },
+    {
+      name: 'locale-matcher',
+      description: 'Locale matching algorithm used by Intl.NumberFormat.',
+      type: '"lookup" | "best fit"',
+      default: 'best fit',
+      control: 'select',
+      options: [
+        { value: 'best fit', label: 'Best Fit' },
+        { value: 'lookup', label: 'Lookup' }
+      ]
+    },
+    {
+      name: 'currency',
+      description: 'ISO 4217 currency code for currency mode.',
+      type: 'string',
+      default: '',
+      control: 'text'
+    },
+    {
+      name: 'currency-display',
+      description: 'Currency display style for currency mode.',
+      type: '"symbol" | "code" | "name"',
+      default: 'symbol',
+      control: 'select',
+      options: [
+        { value: 'symbol', label: 'Symbol' },
+        { value: 'code', label: 'Code' },
+        { value: 'name', label: 'Name' }
+      ]
+    },
+    {
+      name: 'use-grouping',
+      description: 'Enables thousand grouping for numeric formatting.',
+      type: 'boolean',
+      default: true,
+      control: 'boolean'
+    },
+    {
+      name: 'min-fraction-digits',
+      description: 'Minimum fraction digits in number mode.',
+      type: 'number',
+      control: 'number'
+    },
+    {
+      name: 'max-fraction-digits',
+      description: 'Maximum fraction digits in number mode.',
+      type: 'number',
+      control: 'number'
+    },
+    {
+      name: 'allow-empty',
+      description: 'When false, empty numeric values normalize to 0.',
+      type: 'boolean',
+      default: true,
+      control: 'boolean'
+    },
+    {
+      name: 'step',
+      description: 'Step value used by ArrowUp/ArrowDown in number mode.',
+      type: 'number',
+      default: 1,
+      control: 'number'
+    },
+    {
+      name: 'min',
+      description: 'Minimum number value.',
+      type: 'number',
+      control: 'number'
+    },
+    {
+      name: 'max',
+      description: 'Maximum number value.',
+      type: 'number',
+      control: 'number'
+    },
+    {
+      name: 'read-only',
+      description: 'Makes the internal input read-only.',
+      type: 'boolean',
+      default: false,
+      control: 'boolean'
+    },
+    {
+      name: 'input-mode',
+      description: 'Native inputmode hint.',
+      type: 'string',
+      control: 'text'
+    },
+    {
+      name: 'pattern',
+      description: 'Native validation pattern.',
+      type: 'string',
+      default: '',
+      control: 'text'
+    },
+    {
+      name: 'size',
+      description: 'Native input size attribute.',
+      type: 'number',
+      control: 'number'
+    },
+    {
+      name: 'auto-focus',
+      description: 'Auto-focuses the input on mount.',
+      type: 'boolean',
+      default: false,
+      control: 'boolean'
+    },
+    {
+      name: 'input-id',
+      description: 'Id applied to the internal input element.',
       type: 'string',
       default: '',
       control: 'text'
@@ -136,9 +321,73 @@ export const duiInputManifest: ComponentManifest = {
     },
     {
       name: 'inputMask',
-      description: 'Inputmask mask expression used for masking.',
+      description: 'Inputmask expression used for masking.',
       type: 'string',
       default: ''
+    },
+    {
+      name: 'inputMaskConfig',
+      description: 'Inputmask options object used during format/unmask operations.',
+      type: 'Record<string, unknown>',
+      default: '{}'
+    },
+    {
+      name: 'templateName',
+      description: 'Built-in mask preset name.',
+      type: 'string',
+      default: ''
+    },
+    {
+      name: 'mask',
+      description: 'Alias for inputMask.',
+      type: 'string',
+      default: ''
+    },
+    {
+      name: 'slotChar',
+      description: 'Mask slot placeholder character.',
+      type: 'string',
+      default: '_'
+    },
+    {
+      name: 'autoClear',
+      description: 'Clears incomplete masked input.',
+      type: 'boolean',
+      default: true
+    },
+    {
+      name: 'unmask',
+      description: 'Controls whether masked or unmasked value is stored for mask mode.',
+      type: 'boolean',
+      default: true
+    },
+    {
+      name: 'mode',
+      description: 'Number mode (decimal/currency).',
+      type: '"" | "decimal" | "currency"',
+      default: ''
+    },
+    {
+      name: 'locale',
+      description: 'Intl locale for number mode.',
+      type: 'string',
+      default: ''
+    },
+    {
+      name: 'currency',
+      description: 'Currency code for currency mode.',
+      type: 'string',
+      default: ''
+    },
+    {
+      name: 'min',
+      description: 'Minimum allowed numeric value.',
+      type: 'number'
+    },
+    {
+      name: 'max',
+      description: 'Maximum allowed numeric value.',
+      type: 'number'
     },
     {
       name: 'labelPosition',
@@ -157,6 +406,24 @@ export const duiInputManifest: ComponentManifest = {
     {
       name: 'change',
       description: 'Dispatched when value is committed (blur or Enter) with bubbles=true and composed=true.',
+      bubbles: true,
+      composed: true
+    },
+    {
+      name: 'complete',
+      description: 'Dispatched when a mask is fully satisfied.',
+      bubbles: true,
+      composed: true
+    },
+    {
+      name: 'focus',
+      description: 'Forwarded focus event from internal input.',
+      bubbles: true,
+      composed: true
+    },
+    {
+      name: 'blur',
+      description: 'Forwarded blur event from internal input.',
       bubbles: true,
       composed: true
     }
@@ -378,6 +645,14 @@ export const duiInputManifest: ComponentManifest = {
         order: 6
       },
       {
+        id: 'template-name',
+        kind: 'attribute',
+        ref: 'template-name',
+        group: 'content',
+        label: 'Template Preset',
+        order: 7
+      },
+      {
         id: 'type',
         kind: 'attribute',
         ref: 'type',
@@ -410,12 +685,100 @@ export const duiInputManifest: ComponentManifest = {
         order: 4
       },
       {
+        id: 'read-only',
+        kind: 'attribute',
+        ref: 'read-only',
+        group: 'behavior',
+        label: 'Read Only',
+        order: 5
+      },
+      {
+        id: 'input-mode',
+        kind: 'attribute',
+        ref: 'input-mode',
+        group: 'behavior',
+        label: 'Input Mode',
+        order: 6
+      },
+      {
+        id: 'pattern',
+        kind: 'attribute',
+        ref: 'pattern',
+        group: 'behavior',
+        label: 'Pattern',
+        order: 7
+      },
+      {
         id: 'input-mask',
         kind: 'attribute',
         ref: 'input-mask',
         group: 'mask',
         label: 'Input Mask',
         order: 1
+      },
+      {
+        id: 'input-mask-config',
+        kind: 'attribute',
+        ref: 'input-mask-config',
+        group: 'mask',
+        label: 'Input Mask Config',
+        order: 2
+      },
+      {
+        id: 'mask',
+        kind: 'attribute',
+        ref: 'mask',
+        group: 'mask',
+        label: 'Mask Alias',
+        order: 3
+      },
+      {
+        id: 'slot-char',
+        kind: 'attribute',
+        ref: 'slot-char',
+        group: 'mask',
+        label: 'Slot Char',
+        order: 4
+      },
+      {
+        id: 'auto-clear',
+        kind: 'attribute',
+        ref: 'auto-clear',
+        group: 'mask',
+        label: 'Auto Clear',
+        order: 5
+      },
+      {
+        id: 'unmask',
+        kind: 'attribute',
+        ref: 'unmask',
+        group: 'mask',
+        label: 'Unmask Value',
+        order: 6
+      },
+      {
+        id: 'mode',
+        kind: 'attribute',
+        ref: 'mode',
+        group: 'mask',
+        label: 'Number Mode',
+        order: 7
+      },
+      {
+        id: 'currency',
+        kind: 'attribute',
+        ref: 'currency',
+        group: 'mask',
+        label: 'Currency',
+        order: 8
+      },
+      {
+        id: 'step',
+        kind: 'attribute',
+        ref: 'step',
+        group: 'mask',
+        label: 'Step',
+        order: 9
       },
       {
         id: 'token-font-size',

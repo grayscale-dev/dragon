@@ -126,6 +126,128 @@ describe('<dui-input>', () => {
     expect(input.value).to.equal('1234');
   });
 
+  it('supports inputMaskConfig as a property object', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input></dui-input>`);
+    el.inputMaskConfig = { mask: '9{1,4}' };
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    input.value = '12a34';
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await elementUpdated(el);
+
+    expect(el.value).to.equal('1234');
+    expect(input.value).to.equal('1234');
+  });
+
+  it('supports input-mask-config as JSON attribute', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input input-mask-config='{"mask":"9{1,3}"}'></dui-input>`);
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    input.value = '12a34';
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await elementUpdated(el);
+
+    expect(el.value).to.equal('123');
+    expect(input.value).to.equal('123');
+  });
+
+  it('applies advanced Inputmask options from inputMaskConfig', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input input-mask="decimal"></dui-input>`);
+    el.inputMaskConfig = {
+      alias: 'numeric',
+      groupSeparator: ',',
+      autoGroup: true,
+      digits: 2,
+      radixPoint: '.',
+      prefix: '$ ',
+      removeMaskOnSubmit: true
+    };
+    el.value = '1234.5';
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    expect(input.value.startsWith('$')).to.equal(true);
+
+    input.value = '$ 12a3.4';
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await elementUpdated(el);
+
+    expect(el.value.includes('a')).to.equal(false);
+  });
+
+  it('supports template-name preset masks', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input template-name="phone-us"></dui-input>`);
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    input.value = '1234567890';
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await elementUpdated(el);
+
+    expect(el.value).to.equal('1234567890');
+    expect(input.value).to.equal('(123) 456-7890');
+  });
+
+  it('lets explicit input-mask override template-name preset', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input template-name="phone-us" input-mask="9999"></dui-input>`);
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    input.value = '123456';
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await elementUpdated(el);
+
+    expect(el.value).to.equal('1234');
+    expect(input.value).to.equal('1234');
+  });
+
+  it('supports mask property alias and slot-char', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input mask="99/99" slot-char="_"></dui-input>`);
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    input.value = '12';
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await elementUpdated(el);
+
+    expect(input.value).to.equal('12/__');
+  });
+
+  it('dispatches complete event when mask is fully satisfied', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input input-mask="99/99"></dui-input>`);
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    const listener = oneEvent(el, 'complete');
+
+    input.value = '1234';
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+
+    const event = await listener;
+    expect(event.bubbles).to.equal(true);
+    expect(event.composed).to.equal(true);
+  });
+
+  it('supports number mode formatting and step keyboard control', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input mode="currency" currency="USD" locale="en-US"></dui-input>`);
+    el.value = '12.5';
+    el.step = 0.5;
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    expect(input.value.includes('$')).to.equal(true);
+
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, composed: true }));
+    await elementUpdated(el);
+    expect(Number(el.value)).to.equal(13);
+
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, composed: true }));
+    await elementUpdated(el);
+    expect(Number(el.value)).to.equal(12.5);
+  });
+
   it('applies template literals and fills x slots with typed values', async () => {
     const el = await fixture<DuiInput>(html`<dui-input template="(xxx) xxx-xxxx"></dui-input>`);
     el.inputMask = '9{1,10}';
@@ -207,6 +329,21 @@ describe('<dui-input>', () => {
     el.blur();
     await nextFrame();
     expect(el.shadowRoot?.activeElement).to.not.equal(input);
+  });
+
+  it('forwards focus and blur events from internal input', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input></dui-input>`);
+    const input = getInput(el);
+
+    const focusEventPromise = oneEvent(el, 'focus');
+    input.dispatchEvent(new FocusEvent('focus', { bubbles: true, composed: true }));
+    const focusEvent = await focusEventPromise;
+    expect(focusEvent.bubbles).to.equal(true);
+
+    const blurEventPromise = oneEvent(el, 'blur');
+    input.dispatchEvent(new FocusEvent('blur', { bubbles: true, composed: true }));
+    const blurEvent = await blurEventPromise;
+    expect(blurEvent.bubbles).to.equal(true);
   });
 
   it('exposes part="input" for styling', async () => {
