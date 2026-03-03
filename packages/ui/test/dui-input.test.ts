@@ -30,9 +30,7 @@ describe('<dui-input>', () => {
   });
 
   it('initializes from value attribute', async () => {
-    const el = await fixture<DuiInput>(
-      html`<dui-input value="seed"></dui-input>`
-    );
+    const el = await fixture<DuiInput>(html`<dui-input value="seed"></dui-input>`);
     await elementUpdated(el);
     expect(el.value).to.equal('seed');
     expect(getInput(el).value).to.equal('seed');
@@ -79,24 +77,22 @@ describe('<dui-input>', () => {
     });
     const listener = oneEvent(el, 'change');
     input.value = 'enter';
-    input.dispatchEvent(
-      new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true })
-    );
-    const event = await listener;
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
+    await listener;
     expect(currentTargetValue).to.equal('enter');
   });
 
   it('reflects disabled + required + type + name + placeholder + autocomplete to internal input', async () => {
-    const el = await fixture<DuiInput>(
-      html`<dui-input
+    const el = await fixture<DuiInput>(html`
+      <dui-input
         name="email"
         placeholder="Email"
         autocomplete="email"
         type="email"
         required
         disabled
-      ></dui-input>`
-    );
+      ></dui-input>
+    `);
     await elementUpdated(el);
     const input = getInput(el);
     expect(input.disabled).to.equal(true);
@@ -105,6 +101,15 @@ describe('<dui-input>', () => {
     expect(input.placeholder).to.equal('Email');
     expect(input.autocomplete).to.equal('email');
     expect(input.type).to.equal('email');
+  });
+
+  it('hides placeholder text when label position is floating', async () => {
+    const el = await fixture<DuiInput>(html`
+      <dui-input label="Email" label-position="floating" placeholder="Email address"></dui-input>
+    `);
+    await elementUpdated(el);
+    const input = getInput(el);
+    expect(input.placeholder).to.equal('');
   });
 
   it('forwards focus and blur to the internal input', async () => {

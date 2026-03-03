@@ -83,15 +83,19 @@ CSS custom properties:
 - `--ui-input-color`
 - `--ui-input-placeholder-color`
 - `--ui-input-focus-ring`
+- `--ui-input-label-font-size`
+
+Default size values in `<dui-input>` are pixel-based.
 
 Example:
 
 ```css
 dui-input {
-  --ui-input-padding: 0.75rem 1rem;
+  --ui-input-padding: 12px 16px;
   --ui-input-border: 1px solid #94a3b8;
   --ui-input-radius: 999px;
   --ui-input-focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.35);
+  --ui-input-label-font-size: 14px;
 }
 
 dui-input::part(input) {
@@ -105,6 +109,7 @@ dui-input::part(input) {
 
 - `label-position="above"` (default): label sits above the field.
 - `label-position="floating"`: label sits like a placeholder and floats to the top-left on focus or when the input has a value.
+- Floating mode hides placeholder text to avoid overlap with the label.
 
 **Form Behavior**
 

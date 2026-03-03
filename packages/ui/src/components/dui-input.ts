@@ -20,28 +20,28 @@ export class DuiInput extends LitElement {
 
     label {
       display: block;
-      font-size: 0.875rem;
+      font-size: var(--ui-input-label-font-size, 14px);
       color: var(--ui-input-label-color, #475569);
-      margin-bottom: 0.4rem;
+      margin-bottom: 6px;
       line-height: 1.2;
     }
 
     .field.floating label {
       position: absolute;
-      left: var(--ui-input-floating-label-left, 0.75rem);
+      left: var(--ui-input-floating-label-left, 12px);
       top: 50%;
       transform: translateY(-50%);
       margin: 0;
-      padding: 0 0.25rem;
+      padding: 0 4px;
       background: var(--ui-input-bg, #ffffff);
       color: var(--ui-input-placeholder-color, #9aa4b2);
       pointer-events: none;
       transition: transform 120ms ease, top 120ms ease, color 120ms ease;
     }
 
-    .field.floating[data-has-value="true"] label,
+    .field.floating[data-has-value='true'] label,
     :host(:focus-within) .field.floating label {
-      top: 0.35rem;
+      top: 6px;
       transform: translateY(0) scale(0.85);
       color: var(--ui-input-label-color, #475569);
     }
@@ -49,10 +49,10 @@ export class DuiInput extends LitElement {
     input {
       box-sizing: border-box;
       width: 100%;
-      padding: var(--ui-input-padding, 0.5rem 0.75rem);
-      font-size: var(--ui-input-font-size, 1rem);
+      padding: var(--ui-input-padding, 8px 12px);
+      font-size: var(--ui-input-font-size, 16px);
       border: var(--ui-input-border, 1px solid #c6ccd5);
-      border-radius: var(--ui-input-radius, 0.5rem);
+      border-radius: var(--ui-input-radius, 8px);
       background: var(--ui-input-bg, #ffffff);
       color: var(--ui-input-color, #1f2937);
       outline: none;
@@ -61,6 +61,10 @@ export class DuiInput extends LitElement {
 
     input::placeholder {
       color: var(--ui-input-placeholder-color, #9aa4b2);
+    }
+
+    .field.floating input::placeholder {
+      color: transparent;
     }
 
     input:focus {
@@ -73,10 +77,10 @@ export class DuiInput extends LitElement {
     }
 
     .field.floating input {
-      padding-top: var(--ui-input-floating-padding-top, 0.95rem);
-      padding-right: var(--ui-input-floating-padding-right, 0.75rem);
-      padding-bottom: var(--ui-input-floating-padding-bottom, 0.45rem);
-      padding-left: var(--ui-input-floating-padding-left, 0.75rem);
+      padding-top: var(--ui-input-floating-padding-top, 15px);
+      padding-right: var(--ui-input-floating-padding-right, 12px);
+      padding-bottom: var(--ui-input-floating-padding-bottom, 7px);
+      padding-left: var(--ui-input-floating-padding-left, 12px);
     }
   `;
 
@@ -173,12 +177,11 @@ export class DuiInput extends LitElement {
     const hasLabel = this.label.length > 0;
     const isFloating = hasLabel && this.labelPosition === 'floating';
     const hasValue = this.value.length > 0;
+    const effectivePlaceholder = isFloating ? undefined : this.placeholder || undefined;
 
     return html`
       <div class="field ${isFloating ? 'floating' : ''}" data-has-value=${hasValue}>
-        ${hasLabel
-          ? html`<label for="input">${this.label}</label>`
-          : null}
+        ${hasLabel ? html`<label for="input">${this.label}</label>` : null}
         <input
           id="input"
           part="input"
@@ -187,7 +190,7 @@ export class DuiInput extends LitElement {
           .name=${this.name}
           ?disabled=${this.disabled}
           ?required=${this.required}
-          placeholder=${ifDefined(this.placeholder || undefined)}
+          placeholder=${ifDefined(effectivePlaceholder)}
           autocomplete=${ifDefined(this.autocomplete)}
           aria-label=${ifDefined(this.label || this.placeholder || undefined)}
           @input=${this.handleInput}

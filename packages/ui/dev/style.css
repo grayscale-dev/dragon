@@ -3,14 +3,15 @@
   font-family: "Space Grotesk", "Avenir Next", sans-serif;
   background: radial-gradient(circle at top, #f6f7fb 0%, #eef1f7 45%, #e6ebf4 100%);
   color: #1f2a3d;
-  --ui-input-padding: 0.65rem 0.85rem;
-  --ui-input-font-size: 1rem;
+  --ui-input-padding: 10px 14px;
+  --ui-input-font-size: 16px;
   --ui-input-border: 1px solid #b7c2d6;
-  --ui-input-radius: 0.6rem;
+  --ui-input-radius: 10px;
   --ui-input-bg: #ffffff;
   --ui-input-color: #1f2a3d;
   --ui-input-placeholder-color: #7f8aa3;
   --ui-input-focus-ring: 0 0 0 3px rgba(25, 110, 255, 0.25);
+  --ui-input-label-font-size: 14px;
 }
 
 * {
@@ -51,7 +52,7 @@ dui-input::part(input) {
 button {
   border: none;
   border-radius: 999px;
-  padding: 0.6rem 1.2rem;
+  padding: 10px 20px;
   background: #1a2950;
   color: #ffffff;
   font-weight: 600;
