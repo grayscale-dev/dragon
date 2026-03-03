@@ -126,22 +126,31 @@ describe('<dui-input>', () => {
     expect(input.value).to.equal('(123) 456-7890');
   });
 
-  it('shows regex placeholder for non-floating input when enabled', async () => {
+  it('shows explicit regex-placeholder for non-floating input when it exists', async () => {
     const el = await fixture<DuiInput>(html`<dui-input></dui-input>`);
-    el.regex = '^\\(\\d{3}\\)\\s\\d{3}-\\d{4}$';
-    el.showRegexPlaceholder = true;
+    el.regex = '^\\d*$';
+    el.regexPlaceholder = 'Digits only';
     await elementUpdated(el);
 
     const input = getInput(el);
-    expect(input.placeholder).to.equal('(xxx) xxx-xxxx');
+    expect(input.placeholder).to.equal('Digits only');
+  });
+
+  it('falls back to regular placeholder when regex-placeholder is missing', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input placeholder="Fallback"></dui-input>`);
+    el.regex = '^\\d*$';
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    expect(input.placeholder).to.equal('Fallback');
   });
 
   it('shows regex placeholder only while focused for floating labels', async () => {
     const el = await fixture<DuiInput>(html`
       <dui-input label="Phone" label-position="floating"></dui-input>
     `);
-    el.regex = '^\\(\\d{3}\\)\\s\\d{3}-\\d{4}$';
-    el.showRegexPlaceholder = true;
+    el.regex = '^\\d*$';
+    el.regexPlaceholder = 'Digits only';
     await elementUpdated(el);
 
     const input = getInput(el);
@@ -150,7 +159,7 @@ describe('<dui-input>', () => {
     input.focus();
     await nextFrame();
     await elementUpdated(el);
-    expect(input.placeholder).to.equal('(xxx) xxx-xxxx');
+    expect(input.placeholder).to.equal('Digits only');
 
     input.blur();
     await nextFrame();

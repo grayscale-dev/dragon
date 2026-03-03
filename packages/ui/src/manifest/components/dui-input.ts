@@ -15,7 +15,7 @@ export const duiInputManifest: ComponentManifest = {
     },
     {
       name: 'placeholder',
-      description: 'Placeholder text shown when value is empty. Hidden in floating label mode unless regex placeholder is enabled while focused.',
+      description: 'Placeholder text shown when value is empty. Hidden in floating label mode unless explicit regex placeholder mode is enabled while focused.',
       type: 'string',
       default: '',
       control: 'text'
@@ -28,11 +28,11 @@ export const duiInputManifest: ComponentManifest = {
       control: 'text'
     },
     {
-      name: 'show-regex-placeholder',
-      description: 'If true and regex is valid, placeholder is generated from the regex mask (for floating labels, shown only while focused).',
-      type: 'boolean',
-      default: false,
-      control: 'boolean'
+      name: 'regex-placeholder',
+      description: 'Explicit placeholder text for regex mode. If omitted, regex placeholder is not shown.',
+      type: 'string',
+      default: '',
+      control: 'text'
     },
     {
       name: 'name',
@@ -109,10 +109,10 @@ export const duiInputManifest: ComponentManifest = {
       default: ''
     },
     {
-      name: 'showRegexPlaceholder',
-      description: 'Enables regex-derived placeholder text.',
-      type: 'boolean',
-      default: false
+      name: 'regexPlaceholder',
+      description: 'Explicit placeholder text used when regex-placeholder is provided.',
+      type: 'string',
+      default: ''
     },
     {
       name: 'labelPosition',
@@ -368,14 +368,13 @@ export const duiInputManifest: ComponentManifest = {
         order: 1
       },
       {
-        id: 'show-regex-placeholder',
+        id: 'regex-placeholder',
         kind: 'attribute',
-        ref: 'show-regex-placeholder',
+        ref: 'regex-placeholder',
         group: 'mask',
-        label: 'Show Regex Placeholder',
+        label: 'Regex Placeholder',
         order: 2
-      },
-      {
+      },      {
         id: 'token-font-size',
         kind: 'cssToken',
         ref: '--ui-input-font-size',

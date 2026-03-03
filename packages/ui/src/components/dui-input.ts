@@ -229,8 +229,7 @@ export class DuiInput extends LitElement {
   @property({ type: String }) label = '';
   @property({ type: String, attribute: 'label-position' }) labelPosition: 'floating' | 'above' = 'above';
   @property({ type: String, reflect: true }) regex = '';
-  @property({ type: Boolean, attribute: 'show-regex-placeholder', reflect: true }) showRegexPlaceholder = false;
-  @property({ type: Boolean, attribute: 'show-regex-placeholer', reflect: true }) showRegexPlaceholer = false;
+  @property({ type: String, attribute: 'regex-placeholder' }) regexPlaceholder = '';
 
   @query('input')
   private inputEl?: HTMLInputElement;
@@ -265,10 +264,6 @@ export class DuiInput extends LitElement {
     if (changed.has('regex')) {
       this.mask = parseRegexMask(this.regex);
       this.defaultValue = this.normalizeMaskedValue(this.getAttribute('value') ?? '');
-    }
-
-    if (changed.has('showRegexPlaceholer') && this.showRegexPlaceholer) {
-      this.showRegexPlaceholder = true;
     }
   }
 
@@ -408,20 +403,18 @@ export class DuiInput extends LitElement {
     const hasLabel = this.label.length > 0;
     const isFloating = hasLabel && this.labelPosition === 'floating';
     const hasValue = this.value.length > 0;
-
-    const isRegexPlaceholderEnabled = (this.showRegexPlaceholder || this.showRegexPlaceholer) && this.mask !== null;
-    const regexPlaceholder = isRegexPlaceholderEnabled ? this.mask?.placeholder : undefined;
+    const explicitRegexPlaceholder = this.regexPlaceholder.trim() || undefined;
 
     let effectivePlaceholder: string | undefined;
     if (isFloating) {
-      effectivePlaceholder = isRegexPlaceholderEnabled && this.isFocused ? regexPlaceholder : undefined;
-    } else if (isRegexPlaceholderEnabled) {
-      effectivePlaceholder = regexPlaceholder;
+      effectivePlaceholder = explicitRegexPlaceholder && this.isFocused ? explicitRegexPlaceholder : undefined;
+    } else if (explicitRegexPlaceholder) {
+      effectivePlaceholder = explicitRegexPlaceholder;
     } else {
       effectivePlaceholder = this.placeholder || undefined;
     }
 
-    const ariaLabel = this.label || effectivePlaceholder || this.placeholder || regexPlaceholder || undefined;
+    const ariaLabel = this.label || effectivePlaceholder || this.placeholder || explicitRegexPlaceholder || undefined;
 
     return html`
       <div class="field ${isFloating ? 'floating' : ''}" data-has-value=${hasValue}>

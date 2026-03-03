@@ -150,8 +150,9 @@ dui-input::part(input) {
 
 - Example phone pattern: `^\(\d{3}\)\s\d{3}-\d{4}$`
 - As the user types, input is normalized to the mask shape.
-- `show-regex-placeholder` shows a generated placeholder such as `(xxx) xxx-xxxx`.
-- With `label-position="floating"`, the regex placeholder appears only while focused.
+- `regex-placeholder` provides explicit placeholder text for regex mode.
+- If `regex-placeholder` is empty, no regex placeholder is shown.
+- With `label-position="floating"`, regex placeholder appears only while focused.
 
 Example:
 
@@ -160,7 +161,7 @@ Example:
   label="Phone"
   label-position="floating"
   regex="^\(\d{3}\)\s\d{3}-\d{4}$"
-  show-regex-placeholder
+  regex-placeholder="(xxx) xxx-xxxx"
 ></dui-input>
 ```
 
