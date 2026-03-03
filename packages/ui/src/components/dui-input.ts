@@ -28,11 +28,12 @@ export class DuiInput extends LitElement {
 
     .field.floating label {
       position: absolute;
-      left: var(--ui-input-floating-label-left, 12px);
+      left: var(--ui-input-floating-label-left, var(--ui-input-floating-padding-left, 12px));
       top: 50%;
       transform: translateY(-50%);
+      transform-origin: left center;
       margin: 0;
-      padding: 0 4px;
+      padding: 0;
       background: var(--ui-input-bg, #ffffff);
       color: var(--ui-input-placeholder-color, #9aa4b2);
       pointer-events: none;
@@ -41,8 +42,8 @@ export class DuiInput extends LitElement {
 
     .field.floating[data-has-value='true'] label,
     :host(:focus-within) .field.floating label {
-      top: 6px;
-      transform: translateY(0) scale(0.85);
+      top: 7px;
+      transform: scale(0.85);
       color: var(--ui-input-label-color, #475569);
     }
 
@@ -77,9 +78,9 @@ export class DuiInput extends LitElement {
     }
 
     .field.floating input {
-      padding-top: var(--ui-input-floating-padding-top, 15px);
+      padding-top: var(--ui-input-floating-padding-top, 22px);
       padding-right: var(--ui-input-floating-padding-right, 12px);
-      padding-bottom: var(--ui-input-floating-padding-bottom, 7px);
+      padding-bottom: var(--ui-input-floating-padding-bottom, 8px);
       padding-left: var(--ui-input-floating-padding-left, 12px);
     }
   `;
