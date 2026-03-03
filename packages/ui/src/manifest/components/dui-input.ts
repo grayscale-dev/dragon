@@ -15,7 +15,28 @@ export const duiInputManifest: ComponentManifest = {
     },
     {
       name: 'placeholder',
-      description: 'Placeholder text shown when value is empty. Hidden in floating label mode unless regex-placeholder is provided while focused.',
+      description: 'Placeholder text shown when value is empty. Hidden in floating label mode.',
+      type: 'string',
+      default: '',
+      control: 'text'
+    },
+    {
+      name: 'prefix',
+      description: 'Visual prefix always shown before the user value.',
+      type: 'string',
+      default: '',
+      control: 'text'
+    },
+    {
+      name: 'suffix',
+      description: 'Visual suffix always shown after the user value.',
+      type: 'string',
+      default: '',
+      control: 'text'
+    },
+    {
+      name: 'template',
+      description: 'Display template where each x is a value slot and literals stay visible.',
       type: 'string',
       default: '',
       control: 'text'
@@ -23,13 +44,6 @@ export const duiInputManifest: ComponentManifest = {
     {
       name: 'regex',
       description: 'JavaScript regular expression used by the IMask regex engine.',
-      type: 'string',
-      default: '',
-      control: 'text'
-    },
-    {
-      name: 'regex-placeholder',
-      description: 'Explicit placeholder text for regex mode. If omitted, regex placeholder is not shown.',
       type: 'string',
       default: '',
       control: 'text'
@@ -103,14 +117,26 @@ export const duiInputManifest: ComponentManifest = {
       default: ''
     },
     {
-      name: 'regex',
-      description: 'Regex source pattern used for masking.',
+      name: 'prefix',
+      description: 'Visual prefix shown before the user value.',
       type: 'string',
       default: ''
     },
     {
-      name: 'regexPlaceholder',
-      description: 'Explicit placeholder text used when regex-placeholder is provided.',
+      name: 'suffix',
+      description: 'Visual suffix shown after the user value.',
+      type: 'string',
+      default: ''
+    },
+    {
+      name: 'template',
+      description: 'Template string where x characters are value slots.',
+      type: 'string',
+      default: ''
+    },
+    {
+      name: 'regex',
+      description: 'Regex source pattern used for masking.',
       type: 'string',
       default: ''
     },
@@ -328,6 +354,30 @@ export const duiInputManifest: ComponentManifest = {
         order: 3
       },
       {
+        id: 'prefix',
+        kind: 'attribute',
+        ref: 'prefix',
+        group: 'content',
+        label: 'Prefix',
+        order: 4
+      },
+      {
+        id: 'suffix',
+        kind: 'attribute',
+        ref: 'suffix',
+        group: 'content',
+        label: 'Suffix',
+        order: 5
+      },
+      {
+        id: 'template',
+        kind: 'attribute',
+        ref: 'template',
+        group: 'content',
+        label: 'Template',
+        order: 6
+      },
+      {
         id: 'type',
         kind: 'attribute',
         ref: 'type',
@@ -366,14 +416,6 @@ export const duiInputManifest: ComponentManifest = {
         group: 'mask',
         label: 'Regex Mask',
         order: 1
-      },
-      {
-        id: 'regex-placeholder',
-        kind: 'attribute',
-        ref: 'regex-placeholder',
-        group: 'mask',
-        label: 'Regex Placeholder',
-        order: 2
       },
       {
         id: 'token-font-size',

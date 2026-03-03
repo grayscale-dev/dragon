@@ -126,45 +126,75 @@ describe('<dui-input>', () => {
     expect(input.value).to.equal('1234');
   });
 
-  it('shows explicit regex-placeholder for non-floating input when it exists', async () => {
-    const el = await fixture<DuiInput>(html`<dui-input></dui-input>`);
+  it('applies template literals and fills x slots with typed values', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input template="(xxx) xxx-xxxx"></dui-input>`);
     el.regex = '^\\d*$';
-    el.regexPlaceholder = 'Digits only';
     await elementUpdated(el);
 
     const input = getInput(el);
-    expect(input.placeholder).to.equal('Digits only');
+    expect(input.value).to.equal('(xxx) xxx-xxxx');
+
+    input.value = '(xxx) xxx-xxxx8';
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await elementUpdated(el);
+
+    expect(el.value).to.equal('8');
+    expect(input.value).to.equal('(8xx) xxx-xxxx');
   });
 
-  it('falls back to regular placeholder when regex-placeholder is missing', async () => {
-    const el = await fixture<DuiInput>(html`<dui-input placeholder="Fallback"></dui-input>`);
+  it('keeps regex enforcement with template plus prefix/suffix', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input template="(xxx) xxx-xxxx" prefix="$" suffix="px"></dui-input>`);
     el.regex = '^\\d*$';
     await elementUpdated(el);
 
     const input = getInput(el);
-    expect(input.placeholder).to.equal('Fallback');
+    expect(input.value).to.equal('$(xxx) xxx-xxxxpx');
+
+    input.value = '$(12a) xxx-xxxxpx';
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await elementUpdated(el);
+
+    expect(el.value).to.equal('12');
+    expect(input.value).to.equal('$(12x) xxx-xxxxpx');
   });
 
-  it('shows regex placeholder only while focused for floating labels', async () => {
-    const el = await fixture<DuiInput>(html`
-      <dui-input label="Phone" label-position="floating"></dui-input>
-    `);
-    el.regex = '^\\d*$';
-    el.regexPlaceholder = 'Digits only';
+  it('displays prefix and suffix while keeping host value unwrapped', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input prefix="$" suffix="px" value="23"></dui-input>`);
     await elementUpdated(el);
 
     const input = getInput(el);
-    expect(input.placeholder).to.equal('');
+    expect(el.value).to.equal('23');
+    expect(input.value).to.equal('$23px');
 
-    input.focus();
-    await nextFrame();
+    input.value = '$45px';
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
     await elementUpdated(el);
-    expect(input.placeholder).to.equal('Digits only');
 
-    input.blur();
-    await nextFrame();
+    expect(el.value).to.equal('45');
+    expect(input.value).to.equal('$45px');
+  });
+
+  it('keeps prefix and suffix visible when value is empty', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input prefix="$" suffix="px"></dui-input>`);
     await elementUpdated(el);
-    expect(input.placeholder).to.equal('');
+
+    const input = getInput(el);
+    expect(el.value).to.equal('');
+    expect(input.value).to.equal('$px');
+  });
+
+  it('applies regex masking to user input even with prefix/suffix', async () => {
+    const el = await fixture<DuiInput>(html`<dui-input prefix="$" suffix="px"></dui-input>`);
+    el.regex = '^\\d*$';
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    input.value = '$12a3px';
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await elementUpdated(el);
+
+    expect(el.value).to.equal('123');
+    expect(input.value).to.equal('$123px');
   });
 
   it('forwards focus and blur to the internal input', async () => {

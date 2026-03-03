@@ -142,7 +142,41 @@ dui-input::part(input) {
 
 - `label-position="above"` (default): label sits above the field.
 - `label-position="floating"`: label sits like a placeholder and floats to the top-left on focus or when the input has a value.
-- Floating mode hides placeholder text to avoid overlap with the label, unless regex placeholder mode is enabled while focused.
+- Floating mode hides placeholder text to avoid overlap with the label.
+
+**Affixes**
+
+Use `prefix` and `suffix` to show fixed text around the user value.
+
+- Affixes are always displayed in the input.
+- Regex masking still applies to what the user types (`value` stays unprefixed/unsuffixed).
+
+Example:
+
+```html
+<dui-input label="Amount" prefix="$" regex="^\\d*$"></dui-input>
+<dui-input label="Width" suffix="px" regex="^\\d*$"></dui-input>
+```
+
+**Template Masks**
+
+Use `template` to keep literal characters visible while `x` positions are filled by the typed value.
+
+- `x` = value slot
+- Non-`x` characters stay visible in the field
+- Works with `regex`, `prefix`, and `suffix`
+
+Example:
+
+```html
+<dui-input
+  label="Phone"
+  template="(xxx) xxx-xxxx"
+  regex="^\\d*$"
+></dui-input>
+```
+
+Typing `8` shows `(8xx) xxx-xxxx`.
 
 **Masking**
 
@@ -152,9 +186,6 @@ dui-input::part(input) {
 - Example unlimited digits: `\d*`
 - Example phone validation shape: `^\(\d{3}\)\s\d{3}-\d{4}$`
 - As the user types, input is constrained by the regex.
-- `regex-placeholder` provides explicit placeholder text for regex mode.
-- If `regex-placeholder` is empty, no regex placeholder is shown.
-- With `label-position="floating"`, regex placeholder appears only while focused.
 
 Example:
 
@@ -163,7 +194,6 @@ Example:
   label="Phone"
   label-position="floating"
   regex="^\(\d{3}\)\s\d{3}-\d{4}$"
-  regex-placeholder="(xxx) xxx-xxxx"
 ></dui-input>
 ```
 
