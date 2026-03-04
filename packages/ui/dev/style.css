@@ -12,6 +12,13 @@
   --ui-input-placeholder-color: #7f8aa3;
   --ui-input-focus-ring: 0 0 0 3px rgba(25, 110, 255, 0.25);
   --ui-input-label-font-size: 14px;
+  --ui-button-padding: 10px 20px;
+  --ui-button-radius: 999px;
+  --ui-button-bg: #1a2950;
+  --ui-button-hover-bg: #122043;
+  --ui-button-active-bg: #0c1734;
+  --ui-button-color: #ffffff;
+  --ui-button-border: 1px solid #1a2950;
 }
 
 * {
@@ -49,14 +56,8 @@ dui-input::part(input) {
   letter-spacing: 0.01em;
 }
 
-button {
-  border: none;
-  border-radius: 999px;
-  padding: 10px 20px;
-  background: #1a2950;
-  color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
+dui-button::part(button) {
+  letter-spacing: 0.01em;
 }
 
 pre {

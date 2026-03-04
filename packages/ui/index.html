@@ -9,7 +9,7 @@
   <body>
     <main>
       <section class="card">
-        <h1>&lt;dui-input&gt; playground</h1>
+        <h1>&lt;dui-input&gt; + &lt;dui-button&gt; playground</h1>
         <dui-input
           id="live-input"
           label="Floating label"
@@ -19,6 +19,21 @@
           autocomplete="off"
         ></dui-input>
         <p>Value: <span id="live-value"></span></p>
+
+        <dui-button-group>
+          <dui-button label="Day"></dui-button>
+          <dui-button label="Week"></dui-button>
+          <dui-button label="Month"></dui-button>
+        </dui-button-group>
+
+        <h2>&lt;dui-dropdown&gt; playground</h2>
+        <dui-dropdown
+          id="live-dropdown"
+          placeholder="Select a status"
+          searchable
+          max-items-shown="4"
+        ></dui-dropdown>
+        <p>Selected: <span id="dropdown-value"></span></p>
       </section>
 
       <section class="card">
@@ -30,7 +45,7 @@
             label-position="floating"
             name="favorite"
           ></dui-input>
-          <button type="submit">Submit</button>
+          <dui-button type="submit">Submit</dui-button>
         </form>
         <pre id="form-output">(submit the form)</pre>
       </section>

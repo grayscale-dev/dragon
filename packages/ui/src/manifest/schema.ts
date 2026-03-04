@@ -108,11 +108,21 @@ export const ExampleSnippetSchema = z
 
 const ExamplePreviewValueSchema = z.union([z.string(), z.number(), z.boolean()]);
 
+const ExamplePreviewOptionSchema = z
+  .object({
+    value: z.string().min(1),
+    label: z.string().min(1).optional(),
+    disabled: z.boolean().optional()
+  })
+  .strict();
+
 export const ExamplePreviewSchema = z
   .object({
     attributes: z.record(z.string(), ExamplePreviewValueSchema).optional(),
     tokens: z.record(z.string(), z.string()).optional(),
+    options: z.array(ExamplePreviewOptionSchema).optional(),
     value: z.string().optional(),
+    values: z.array(z.string().min(1)).optional(),
     notes: z.string().min(1).optional()
   })
   .strict();

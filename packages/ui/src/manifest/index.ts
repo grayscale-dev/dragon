@@ -1,5 +1,8 @@
+import { duiButtonGroupManifest } from './components/dui-button-group.js';
+import { duiButtonManifest } from './components/dui-button.js';
 import { duiCurrencyInputManifest } from './components/dui-currency-input.js';
 import { duiDateInputManifest } from './components/dui-date-input.js';
+import { duiDropdownManifest } from './components/dui-dropdown.js';
 import { duiInputManifest } from './components/dui-input.js';
 import { duiMaskInputManifest } from './components/dui-mask-input.js';
 import { duiNumberInputManifest } from './components/dui-number-input.js';
@@ -10,10 +13,13 @@ export const manifest: DragonManifest = {
   package: '@grayscale-dev/dragon',
   components: [
     duiInputManifest,
+    duiButtonManifest,
+    duiButtonGroupManifest,
     duiMaskInputManifest,
     duiNumberInputManifest,
     duiCurrencyInputManifest,
-    duiDateInputManifest
+    duiDateInputManifest,
+    duiDropdownManifest
   ]
 };
 

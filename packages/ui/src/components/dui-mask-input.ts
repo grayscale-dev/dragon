@@ -274,6 +274,12 @@ export class DuiMaskInput extends LitElement {
       rightAlign: false
     };
 
+    if (this.mode === 'currency') {
+      // Currency fields should behave like right-to-left digit entry:
+      // typing 3 -> 0.03, then 2 -> 0.32, then 1 -> 3.21.
+      options.numericInput = true;
+    }
+
     if (typeof this.maxFractionDigits === 'number') {
       options.digits = this.maxFractionDigits;
       if (typeof this.minFractionDigits === 'number') {
@@ -423,6 +429,11 @@ export class DuiMaskInput extends LitElement {
     const options = this.getInputMaskOptions();
     if (!options) return rawValue;
 
+    if (!rawValue && this.hasPatternMask()) {
+      // Keep native placeholder visible for empty masked fields.
+      return '';
+    }
+
     try {
       const formatted = Inputmask.format(rawValue, options);
       return typeof formatted === 'string' ? formatted : rawValue;
@@ -477,12 +488,45 @@ export class DuiMaskInput extends LitElement {
     return valueChars.join('');
   }
 
+  private normalizeCurrencyFromUserInput(inputValue: string): string {
+    const withoutAffixes = this.stripAffixes(inputValue);
+    const digits = withoutAffixes.replace(/\D+/g, '');
+
+    if (!digits) {
+      return this.allowEmpty ? '' : '0';
+    }
+
+    const fractionDigits =
+      typeof this.maxFractionDigits === 'number'
+        ? Math.max(0, this.maxFractionDigits)
+        : typeof this.minFractionDigits === 'number'
+          ? Math.max(0, this.minFractionDigits)
+          : 2;
+
+    const scaled = Number(digits) / 10 ** fractionDigits;
+    const signed = withoutAffixes.includes('-') ? -scaled : scaled;
+
+    if (!Number.isFinite(signed)) {
+      return this.allowEmpty ? '' : '0';
+    }
+
+    if (fractionDigits === 0) {
+      return this.clampNumberValue(String(signed));
+    }
+
+    return this.clampNumberValue(signed.toFixed(fractionDigits));
+  }
+
   private normalizeFromValue(inputValue: string): string {
     const normalized = this.normalizeWithInputMask(this.stripAffixes(inputValue));
     return this.capToTemplate(this.clampNumberValue(normalized));
   }
 
   private normalizeFromUserInput(inputValue: string): string {
+    if (this.mode === 'currency') {
+      return this.capToTemplate(this.normalizeCurrencyFromUserInput(inputValue));
+    }
+
     const withoutAffixes = this.stripAffixes(inputValue);
     const templateValue = this.extractTemplateValue(withoutAffixes);
     const normalized = this.normalizeWithInputMask(templateValue);
@@ -510,6 +554,39 @@ export class DuiMaskInput extends LitElement {
     return `${this.prefix}${innerValue}${this.suffix}`;
   }
 
+  private hasPatternMask(): boolean {
+    if (this.template.length > 0) {
+      return true;
+    }
+
+    const options = this.getInputMaskOptions();
+    return typeof options?.mask === 'string' && options.mask.length > 0;
+  }
+
+  private getNextMaskedCaret(displayValue: string): number {
+    if (this.template.length > 0) {
+      const templateIndex = displayValue.indexOf('x');
+      return templateIndex >= 0 ? templateIndex : displayValue.length;
+    }
+
+    const char = this.slotChar || '_';
+    const maskIndex = displayValue.indexOf(char);
+    return maskIndex >= 0 ? maskIndex : displayValue.length;
+  }
+
+  private setMaskedCaret(target: HTMLInputElement, displayValue: string): void {
+    if (!this.hasPatternMask()) return;
+
+    const nextCaret = this.getNextMaskedCaret(displayValue);
+    queueMicrotask(() => {
+      try {
+        target.setSelectionRange(nextCaret, nextCaret);
+      } catch {
+        // Ignore unsupported selection operations.
+      }
+    });
+  }
+
   private isMaskComplete(displayValue: string): boolean {
     const options = this.getInputMaskOptions();
     if (!options) return false;
@@ -526,7 +603,13 @@ export class DuiMaskInput extends LitElement {
 
   private handleFocus(event: FocusEvent): void {
     event.stopPropagation();
+    const target = event.target as HTMLInputElement;
+
     this.dispatchEvent(new FocusEvent('focus', { bubbles: true, composed: true }));
+
+    if (!this.value) {
+      this.setMaskedCaret(target, target.value);
+    }
   }
 
   private handleBlurForward(event: FocusEvent): void {
@@ -554,6 +637,7 @@ export class DuiMaskInput extends LitElement {
     }
 
     this.value = nextValue;
+    this.setMaskedCaret(target, displayValue);
     this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
 
     if (this.isMaskComplete(displayValue)) {

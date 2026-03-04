@@ -122,6 +122,17 @@ describe('component manifest', () => {
     expect(result.error?.issues.some((issue) => issue.message.includes('unknown related example'))).to.equal(true);
   });
 
+
+  it('includes demo options in dropdown previews', () => {
+    const manifest = getManifest();
+    const dropdown = manifest.components.find((component) => component.tag === 'dui-dropdown');
+    expect(dropdown?.examples).to.exist;
+
+    for (const item of dropdown!.examples!.items) {
+      expect(item.preview?.options && item.preview.options.length > 0, `${item.id} is missing preview.options`).to.equal(true);
+    }
+  });
+
   it('matches the generated dist/manifest.json snapshot', async () => {
     const manifest = getManifest();
     const response = await fetch('/dist/manifest.json');

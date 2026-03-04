@@ -1,4 +1,4 @@
-import { fixture, expect, oneEvent, elementUpdated } from '@open-wc/testing';
+import { fixture, expect, oneEvent, elementUpdated, aTimeout } from '@open-wc/testing';
 import { html } from 'lit';
 import type { DuiMaskInput } from '../src/components/dui-mask-input.js';
 import type { DuiCurrencyInput } from '../src/components/dui-currency-input.js';
@@ -10,6 +10,14 @@ function getInput(el: HTMLElement): HTMLInputElement {
   const input = el.shadowRoot?.querySelector('input');
   if (!input) throw new Error('Expected internal input');
   return input as HTMLInputElement;
+}
+
+function typeAtCursor(input: HTMLInputElement, char: string): void {
+  const start = input.selectionStart ?? input.value.length;
+  const end = input.selectionEnd ?? start;
+  input.value = `${input.value.slice(0, start)}${char}${input.value.slice(end)}`;
+  input.setSelectionRange(start + 1, start + 1);
+  input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
 }
 
 describe('<dui-mask-input>', () => {
@@ -93,6 +101,29 @@ describe('specialized inputs', () => {
     expect(Number(el.value)).to.equal(12.5);
   });
 
+  it('<dui-currency-input> shifts digits from right when typing', async () => {
+    const el = await fixture<DuiCurrencyInput>(
+      html`<dui-currency-input currency="USD" currency-display="symbol" step="1"></dui-currency-input>`
+    );
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    input.value = `${input.value}3`;
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await elementUpdated(el);
+    expect(el.value).to.equal('0.03');
+
+    input.value = `${input.value}2`;
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await elementUpdated(el);
+    expect(el.value).to.equal('0.32');
+
+    input.value = `${input.value}1`;
+    input.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+    await elementUpdated(el);
+    expect(el.value).to.equal('3.21');
+  });
+
   it('<dui-currency-input> defaults currency formatting', async () => {
     const el = await fixture<DuiCurrencyInput>(html`<dui-currency-input value="1234.5" locale="en-US"></dui-currency-input>`);
     await elementUpdated(el);
@@ -102,6 +133,40 @@ describe('specialized inputs', () => {
   it('<dui-date-input> defaults to YYYY-MM-DD mask', async () => {
     const el = await fixture<DuiDateInput>(html`<dui-date-input></dui-date-input>`);
     await elementUpdated(el);
-    expect(getInput(el).placeholder).to.equal('YYYY-MM-DD');
+    const input = getInput(el);
+    expect(input.placeholder).to.equal('YYYY-MM-DD');
+    expect(input.value).to.equal('');
+  });
+
+  it('<dui-date-input> advances caret through mask when typing', async () => {
+    const el = await fixture<DuiDateInput>(html`<dui-date-input></dui-date-input>`);
+    await elementUpdated(el);
+
+    const input = getInput(el);
+    input.focus();
+    await aTimeout(0);
+
+    typeAtCursor(input, '2');
+    await elementUpdated(el);
+    await aTimeout(0);
+    expect(el.value).to.equal('2');
+    expect(input.selectionStart).to.equal(1);
+
+    typeAtCursor(input, '0');
+    await elementUpdated(el);
+    await aTimeout(0);
+    expect(el.value).to.equal('20');
+    expect(input.selectionStart).to.equal(2);
+
+    typeAtCursor(input, '2');
+    await elementUpdated(el);
+    await aTimeout(0);
+    expect(el.value).to.equal('202');
+
+    typeAtCursor(input, '6');
+    await elementUpdated(el);
+    await aTimeout(0);
+    expect(el.value).to.equal('2026');
+    expect(input.selectionStart).to.equal(5);
   });
 });
